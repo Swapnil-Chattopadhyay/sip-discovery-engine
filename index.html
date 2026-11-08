@@ -1788,7 +1788,7 @@ const TOPIC_TAG = { Partial:'reported', Gap:'nopub', Voiced:'confirmed', Hypothe
   });
 
   /* flow diagram */
-  const fb = cardShell($('#c-flow'), 'Stocks and flows of a first SIP', 'The highlighted stock exists on Coin because Zerodha SIPs are not auto-cancelled. No status report shows it.', 'Inferred', 'How do the stocks and loops work?');
+  const fb = cardShell($('#c-flow'), 'Stocks and flows of a first SIP', 'The highlighted stock exists on Coin because Zerodha SIPs are not auto-cancelled. No status report shows it.', null, 'How do the stocks and loops work?');
   const sc = el('div','chart-scroll'); fb.appendChild(sc);
   const node = (x,y,w,t,hid) => `<g class="node" tabindex="0"><rect class="nd${hid?' hid':''}" x="${x}" y="${y}" width="${w}" height="46" rx="10"/><text class="nt${hid?' hidt':''}" x="${x+w/2}" y="${y+28}" text-anchor="middle">${t}</text></g>`;
   const arr = (d,hot) => `<path class="ed${hot?' hot':''}" d="${d}" marker-end="url(#ah${hot?'h':''})"/>`;
