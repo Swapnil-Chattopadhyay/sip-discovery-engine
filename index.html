@@ -40,6 +40,7 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 [hidden] { display: none !important; }
+html { scroll-behavior: smooth; }
 
 body {
   background: var(--obsidian);
@@ -64,7 +65,7 @@ strong { font-weight: 500; color: var(--cloud); }
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
-section { padding-block: clamp(48px, 7vw, 80px); scroll-margin-top: 72px; }
+section { padding-block: clamp(32px, 5vw, 60px); scroll-margin-top: 72px; }
 section.band { background: var(--abyss); }
 
 /* ---------- type ---------- */
@@ -81,7 +82,7 @@ section.band { background: var(--abyss); }
 }
 .display em { font-style: italic; font-weight: 300; }
 h2.display { font-size: clamp(36px, 5.4vw, 64px); text-align: center; }
-.sec-head { text-align: center; margin-bottom: clamp(32px, 5vw, 56px); display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.sec-head { text-align: center; margin-bottom: clamp(20px, 3.5vw, 40px); display: flex; flex-direction: column; align-items: center; gap: 14px; }
 .sec-head .sub { max-width: 660px; font-size: 18px; line-height: 1.5; }
 .mono { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.1em; font-size: 11px; }
 h3 { font-family: var(--serif); font-weight: 300; color: var(--cloud); font-size: 28px; line-height: 1.05; letter-spacing: -0.005em; }
@@ -126,10 +127,10 @@ nav {
 /* ---------- hero ---------- */
 .hero {
   background: linear-gradient(180deg, rgb(43,43,44) 0%, rgb(19,19,19) 100%);
-  padding-block: clamp(56px, 9vw, 112px) clamp(48px, 7vw, 88px);
+  padding-block: clamp(40px, 7vw, 88px) clamp(32px, 5vw, 64px);
   text-align: center;
 }
-.hero .wrap { display: flex; flex-direction: column; align-items: center; gap: 28px; }
+.hero .wrap { display: flex; flex-direction: column; align-items: center; gap: 20px; }
 .hero h1 { font-size: clamp(46px, 9.2vw, 96px); max-width: 980px; }
 .hero .lead { max-width: 640px; font-size: 18px; line-height: 1.5; color: var(--ash); }
 .prompt {
@@ -453,6 +454,57 @@ body.eng-open .fab { opacity: 0; pointer-events: none; transform: scale(.8); }
 #tip.rich { max-width: 300px; padding: 14px 16px; }
 #tip .t-body { font-size: 13px; line-height: 1.5; color: var(--cloud); font-weight: 300; }
 #tip .t-hint { margin-top: 9px; padding-top: 9px; border-top: 1px solid var(--hair-hi); font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--ash); display: flex; align-items: center; gap: 6px; }
+
+/* ---------- premium icon / svg hover animations ---------- */
+/* SVG icons inside nav, cards, stat blocks */
+svg:not(.chart):not(.spark-svg) {
+  transition: transform .22s cubic-bezier(.34,1.56,.64,1), opacity .18s ease;
+  will-change: transform;
+}
+@media (hover: hover) {
+  /* nav icon hover */
+  .nav-in svg:hover { transform: scale(1.18) rotate(-8deg); opacity: 1; }
+
+  /* ask-icon (the small circular question icons on cards) */
+  .askic svg { transition: transform .22s cubic-bezier(.34,1.56,.64,1); }
+  .askic:hover svg { transform: rotate(90deg) scale(1.15); }
+
+  /* go button (prompt submit) */
+  .go svg { transition: transform .2s cubic-bezier(.34,1.56,.64,1); }
+  .go:hover svg { transform: scale(1.2) translateX(2px); }
+
+  /* FAB spark icon */
+  .fab .spark { transition: transform .22s cubic-bezier(.34,1.56,.64,1); }
+  .fab:hover .spark { transform: scale(1.18) rotate(15deg); }
+
+  /* generic icon elements inside tiles and cards */
+  .tile svg, .card svg:not(.chart) {
+    transition: transform .2s cubic-bezier(.34,1.56,.64,1);
+  }
+  .tile:hover svg, .card:hover svg:not(.chart) { transform: scale(1.14) rotate(-6deg); }
+
+  /* stat block icons */
+  .stat svg { transition: transform .2s cubic-bezier(.34,1.56,.64,1); }
+  .stat:hover svg { transform: scale(1.2) translateY(-2px); }
+
+  /* popover / tooltip trigger icons */
+  .tag svg { transition: transform .18s ease; }
+  .tag:hover svg { transform: scale(1.25); }
+
+  /* expand toggle icons inside details */
+  details summary svg {
+    transition: transform .25s ease;
+  }
+  details[open] summary svg { transform: rotate(180deg); }
+}
+
+/* Tooltip pop — slight scale on the whole tooltip on first appearance */
+#tip { animation: none; }
+#tip.visible { animation: tipIn .18s cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes tipIn {
+  from { opacity: 0; transform: scale(.9) translateY(4px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
 
 /* clock timeline */
 .clock { display: grid; grid-template-columns: repeat(6, minmax(0,1fr)); gap: 0; position: relative; }
@@ -944,6 +996,9 @@ function tipShow(x, y, title, rows) {
     TIP.appendChild(row);
   });
   TIP.classList.add('on');
+  TIP.classList.remove('visible');
+  void TIP.offsetWidth; // force reflow so animation restarts
+  TIP.classList.add('visible');
   const w = TIP.offsetWidth, h = TIP.offsetHeight;
   let left = x - w/2, top = y - h - 12;
   left = Math.max(10, Math.min(left, window.innerWidth - w - 10));
@@ -951,7 +1006,7 @@ function tipShow(x, y, title, rows) {
   TIP.style.left = left + 'px';
   TIP.style.top = top + 'px';
 }
-function tipHide(){ TIP.classList.remove('on'); TIP.classList.remove('rich'); }
+function tipHide(){ TIP.classList.remove('on'); TIP.classList.remove('rich'); TIP.classList.remove('visible'); }
 document.addEventListener('scroll', tipHide, { passive: true });
 function richShow(x, y, title, body, hint) {
   TIP.textContent = '';
@@ -960,6 +1015,9 @@ function richShow(x, y, title, body, hint) {
   if (body) TIP.appendChild(el('div','t-body', body));
   if (hint) TIP.appendChild(el('div','t-hint', hint));
   TIP.classList.add('on');
+  TIP.classList.remove('visible');
+  void TIP.offsetWidth;
+  TIP.classList.add('visible');
   const w = TIP.offsetWidth, h = TIP.offsetHeight;
   let left = x - w/2, top = y - h - 14;
   left = Math.max(10, Math.min(left, window.innerWidth - w - 10));
